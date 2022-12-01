@@ -1,3 +1,7 @@
+import functions from "firebase-functions";
+
+//const {functions} = pkg;
+
 import express from "express";
 import bodyParser from "body-parser";
 import mongoose from "mongoose";
@@ -8,15 +12,12 @@ import helmet from "helmet";
 import morgan from "morgan";
 import path from "path";
 import { fileURLToPath } from "url";
-import authRoutes from "./routes/auth.js";
-import userRoutes from "./routes/users.js";
-import postRoutes from "./routes/posts.js";
-import { register } from "./controllers/auth.js";
-import { createPost } from "./controllers/posts.js";
-import { verifyToken } from "./middleware/auth.js";
-import User from "./models/User.js";
-import Post from "./models/Post.js";
-import { users, posts } from "./data/index.js";
+import authRoutes from "../routes/auth.js";
+import userRoutes from "../routes/users.js";
+import postRoutes from "../routes/posts.js";
+import { register } from "../controllers/auth.js";
+import { createPost } from "../controllers/posts.js";
+import { verifyToken } from "../middleware/auth.js";
 
 /* CONFIGURATIONS 
 different middelwere
@@ -55,12 +56,12 @@ app.use("/users", userRoutes);
 app.use("/posts", postRoutes);
 
 /* STATIC */
-if (process.env.NODE_ENV === 'production') {
-  app.use('/', express.static(path.join(__dirname, '../client', 'build')))
+if (process.env.NODE_ENV === "production") {
+  app.use("/", express.static(path.join(__dirname, "../client", "build")));
 
-  app.get('*', (req, res) => {
-    res.sendFile(path.resolve(__dirname, '../client', 'build', 'index.html'))
-  })
+  app.get("*", (req, res) => {
+    res.sendFile(path.resolve(__dirname, "../client", "build", "index.html"));
+  });
 }
 /* MANGOOSE SETUP */
 
@@ -71,10 +72,10 @@ mongoose
     useUnifiedTopology: true,
   })
   .then(() => {
-    app.listen(PORT, () => console.log(`Server Port: ${PORT}`));
-
-    // /*Add data one Time */
-    // User.insertMany(users);
-    // Post.insertMany(posts);
+    exports.app = functions.https.onRequest(app);
+    console.log(`Server Port: ${PORT}`);
+    // app.listen(PORT, () => console.log(`Server Port: ${PORT}`));
   })
   .catch((error) => console.log(`${error} did not connect`));
+
+// exports.app = functions.https.onRequest(app);
